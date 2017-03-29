@@ -67,10 +67,20 @@ public class QryEval {
     //  Open the index and initialize the retrieval model.
 
     Idx.open (parameters.get ("indexPath"));
-    RetrievalModel model = initializeRetrievalModel (parameters);
 
-    //  Perform experiments.
-    processQueryFile(parameters.get("queryFilePath"), model);
+    if(LeToR.getInstance().isLeTorPresent()){
+      //TrainModels
+      LeToR.getInstance().train();
+    }
+    else
+    {
+      RetrievalModel model = initializeRetrievalModel(parameters);
+      //  Perform experiments.
+      processQueryFile(parameters.get("queryFilePath"), model);
+
+    }
+
+
 
     //  Clean up.
     timer.stop ();
@@ -413,6 +423,58 @@ public class QryEval {
     if(parameters.containsKey("fbExpansionQueryFile")){
       QryExpander.fbExpansionQueryFile = parameters.get("fbExpansionQueryFile");
       System.out.println("fbExpansionQueryFile=" + QryExpander.fbExpansionQueryFile);
+    }
+
+
+    //LeToR
+    /**
+     * letor:trainingQueryFile= A file of training queries.
+     letor:trainingQrelsFile= A file of relevance judgments. Column 1 is the query id. Column 2 is ignored. Column 3 is the document id. Column 4 indicates the degree of relevance (0-2).
+     letor:trainingFeatureVectorsFile= The file of feature vectors that your software will write for the training queries.
+     letor:pageRankFile= A file of PageRank scores.
+     letor:featureDisable= A comma-separated list of features to disable for this experiment. For example, "letor:featureDisable=6,9,12,15" disables all Indri features. If this parameter is missing, use all features.
+     letor:svmRankLearnPath= A path to the svm_rank_learn executable.
+     letor:svmRankClassifyPath= A path to the svm_rank_classify executable.
+     letor:svmRankParamC= The value of the c parameter for SVMrank. 0.001 is a good default.
+     letor:svmRankModelFile= The file where svm_rank_learn will write the learned model.
+     letor:testingFeatureVectorsFile= The file of feature vectors that your software will write for the testing queries.
+     letor:testingDocumentScores= The file of document scores that svm_rank_classify will write for the testing feature vectors.
+     */
+    if(parameters.containsKey("letor:trainingQueryFile")){
+      LeToR.getInstance().setTrainingQueryFile(parameters.get("letor:trainingQueryFile"));
+    }
+
+    if(parameters.containsKey("letor:trainingQrelsFile")){
+      LeToR.getInstance().setTrainingQrelsFile(parameters.get("letor:trainingQrelsFile"));
+    }
+    if(parameters.containsKey("letor:trainingFeatureVectorsFile")){
+      LeToR.getInstance().setTrainingFeatureVectorsFile(parameters.get("letor:trainingFeatureVectorsFile"));
+    }
+
+
+    if(parameters.containsKey("letor:pageRankFile")){
+      LeToR.getInstance().setPageRankFile(parameters.get("letor:pageRankFile"));
+    }
+    if(parameters.containsKey("letor:featureDisable")){
+      LeToR.getInstance().setFeatureDisable(parameters.get("letor:featureDisable"));
+    }
+    if(parameters.containsKey("letor:svmRankLearnPath")){
+      LeToR.getInstance().setSvmRankLearnPath(parameters.get("letor:svmRankLearnPath"));
+    }
+    if(parameters.containsKey("letor:svmRankClassifyPath")){
+      LeToR.getInstance().setSvmRankClassifyPath(parameters.get("letor:svmRankClassifyPath"));
+    }
+    if(parameters.containsKey("letor:svmRankParamC")){
+      LeToR.getInstance().setSvmRankParamC(Double.parseDouble(parameters.get("letor:svmRankParamC")));
+    }
+    if(parameters.containsKey("letor:svmRankModelFile")){
+      LeToR.getInstance().setSvmRankModelFile(parameters.get("letor:svmRankModelFile"));
+    }
+    if(parameters.containsKey("letor:testingFeatureVectorsFile")){
+      LeToR.getInstance().setTestingFeatureVectorsFile(parameters.get("letor:testingFeatureVectorsFile"));
+    }
+    if(parameters.containsKey("letor:testingDocumentScores")){
+      LeToR.getInstance().setTestingDocumentScores(parameters.get("letor:testingDocumentScores"));
     }
 
 
